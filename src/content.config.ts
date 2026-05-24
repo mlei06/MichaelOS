@@ -40,6 +40,13 @@ const blog = defineCollection({
     desc: z.string().optional(),
     modified: z.string().optional(),
     published: z.boolean().optional().default(true),
+    hero: z
+      .object({
+        src: z.string().optional(),
+        id: z.string().optional(),
+        placeholder: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 
@@ -49,6 +56,9 @@ const pages = defineCollection({
   schema: z.object({
     title: z.string().optional(),
     modified: z.string().optional(),
+    email: z.string().optional(),
+    github: z.string().optional(),
+    linkedin: z.string().optional(),
   }),
 });
 

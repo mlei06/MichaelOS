@@ -425,6 +425,47 @@ body {
   box-shadow: 0 0 4px var(--accent);
 }
 
+.menubar .mb-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+  margin-right: 4px;
+  letter-spacing: 0.01em;
+}
+
+.menubar .mb-resume-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: var(--bg);
+  border: 1px solid var(--accent);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.menubar .mb-resume-cta:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.menubar .mb-resume-cta:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+.menubar .mb-resume-cta.open {
+  background: transparent;
+  color: var(--accent);
+}
+.menubar .mb-resume-arrow {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
 .menubar .mb-spacer { flex: 1; }
 
 .menubar .mb-right {
@@ -2037,4 +2078,251 @@ body {
   pointer-events: none;
   text-align: center;
   opacity: 0.5;
+}
+
+/* ============================================================
+   Mobile flat layout — rendered under 768px instead of the OS metaphor.
+   ============================================================ */
+
+.mobile {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans), system-ui, sans-serif;
+  padding: 24px 18px 80px;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.mobile a { color: var(--accent); }
+.mobile a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.m-hero {
+  text-align: center;
+  padding: 24px 0 32px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 32px;
+}
+.m-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-soft);
+  margin-bottom: 12px;
+}
+.m-hero h1 {
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 700;
+  margin: 4px 0 6px;
+  letter-spacing: -0.01em;
+}
+.m-role {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-soft);
+  margin: 0 0 14px;
+}
+.m-tagline {
+  color: var(--text-soft);
+  font-size: 15px;
+  margin: 0 auto 20px;
+  max-width: 480px;
+}
+.m-cta {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.m-cta-primary {
+  background: var(--accent);
+  color: var(--bg);
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: var(--mono);
+  text-decoration: none;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.m-cta-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border-soft);
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 14px;
+  text-decoration: none;
+}
+.m-hero-links {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.m-desktop-hint {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text-dim);
+  margin: 0;
+  opacity: 0.75;
+}
+
+.m-section {
+  margin: 32px 0;
+}
+.m-section > h2 {
+  font-family: var(--mono);
+  font-size: 18px;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.m-count {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.m-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.m-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.m-card header {
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.m-card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--mono);
+  margin-bottom: 6px;
+}
+.m-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.m-slash { color: var(--text-dim); }
+.m-card-year, .m-card-date {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+.m-card-blurb {
+  color: var(--text-soft);
+  font-size: 14px;
+  margin: 4px 0 10px;
+}
+.m-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.m-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg-elev-2);
+  color: var(--text-soft);
+  border: 1px solid var(--border-soft);
+}
+.m-tag-role { color: var(--accent); border-color: var(--accent); }
+.m-tag-status { color: var(--text-dim); }
+.m-card-toggle {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  cursor: pointer;
+  padding: 0;
+}
+.m-card-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--border-soft);
+}
+.m-card-hero {
+  width: 100%;
+  border-radius: 6px;
+  margin: 14px 0;
+  display: block;
+}
+.m-prose {
+  font-size: 14.5px;
+  color: var(--text-soft);
+}
+.m-prose h1 { font-size: 20px; margin: 18px 0 8px; color: var(--text); }
+.m-prose h2 { font-size: 16px; margin: 16px 0 6px; color: var(--text); }
+.m-prose h3 { font-size: 14px; margin: 14px 0 6px; color: var(--text); }
+.m-prose p { margin: 8px 0; }
+.m-prose ul { margin: 8px 0; padding-left: 20px; }
+.m-prose li { margin: 4px 0; }
+.m-prose code {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: var(--bg-elev-2);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.m-prose a { color: var(--accent); }
+
+.m-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.m-link {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--text-soft);
+}
+
+.m-contact ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.m-contact li { padding: 6px 0; }
+
+.m-footer {
+  text-align: center;
+  padding-top: 40px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 12px;
 }

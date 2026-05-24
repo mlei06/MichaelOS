@@ -27,6 +27,17 @@ const PROJECT_ORDER = [
 ];
 
 const fsTree = buildFs({ projects, blog, pages, projectOrder: PROJECT_ORDER });
+
+const SITE_URL = 'https://michaellei.com';
+const TITLE = 'Michael Lei — Software Engineer · Duke ECE + CS';
+const DESCRIPTION =
+  'Michael Lei is a Duke ECE + CS engineer building AI-augmented software. Projects, writing, and resume — explore through a terminal-and-windows portfolio.';
+const OG_IMAGE = `${SITE_URL}/media/avatar/photo.jpg`;
+
+const projectList = PROJECT_ORDER.filter((id) => projects.some((p) => p.id === id));
+const blogList = blog.map((b) => b.id).sort().reverse();
+const contactPage = pages.find((p) => p.id === 'contact');
+const contact = contactPage?.data ?? {};
 ---
 
 <!doctype html>
@@ -34,7 +45,21 @@ const fsTree = buildFs({ projects, blog, pages, projectOrder: PROJECT_ORDER });
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>michael@portfolio</title>
+    <title>{TITLE}</title>
+    <meta name="description" content={DESCRIPTION} />
+    <meta name="author" content="Michael Lei" />
+    <link rel="canonical" href={SITE_URL} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={SITE_URL} />
+    <meta property="og:title" content={TITLE} />
+    <meta property="og:description" content={DESCRIPTION} />
+    <meta property="og:image" content={OG_IMAGE} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={TITLE} />
+    <meta name="twitter:description" content={DESCRIPTION} />
+    <meta name="twitter:image" content={OG_IMAGE} />
 
     <link rel="icon" type="image/jpeg" href="/media/avatar/photo.jpg" />
     <link rel="apple-touch-icon" href="/media/avatar/photo.jpg" />
@@ -43,13 +68,29 @@ const fsTree = buildFs({ projects, blog, pages, projectOrder: PROJECT_ORDER });
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&family=VT323&display=swap"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=VT323&display=swap"
     />
   </head>
   <body>
     <div id="root">
       <PortfolioRoot client:only="react" fsTree={fsTree} />
     </div>
-    <script src="/image-slot.js" is:inline></script>
+    <noscript>
+      <div style="max-width:720px;margin:48px auto;padding:0 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#111;">
+        <h1 style="margin-bottom:8px;">Michael Lei</h1>
+        <p style="color:#555;margin-top:0;">Software engineer · Duke ECE + CS · graduating May 2028</p>
+        <p>This site is an interactive desktop-style portfolio that requires JavaScript. Without JS, here are the direct links:</p>
+        <ul>
+          <li><a href="/resumes/master.pdf">Resume (PDF)</a></li>
+          {contact.email && <li>Email: <a href={`mailto:${contact.email}`}>{contact.email}</a></li>}
+          {contact.github && <li>GitHub: <a href={contact.github}>{contact.github}</a></li>}
+          {contact.linkedin && <li>LinkedIn: <a href={contact.linkedin}>{contact.linkedin}</a></li>}
+        </ul>
+        <h2>Projects</h2>
+        <ul>{projectList.map((id) => <li>{id}</li>)}</ul>
+        <h2>Writing</h2>
+        <ul>{blogList.map((id) => <li>{id}</li>)}</ul>
+      </div>
+    </noscript>
   </body>
 </html>

@@ -8,6 +8,9 @@ import { Terminal } from './Terminal.jsx';
 import { Window } from './Window.jsx';
 import { useTweaks, TweaksPanel, TweakSection, TweakSelect, TweakButton } from './TweaksPanel.jsx';
 import { setFS } from '../lib/fs.ts';
+import Mobile from './Mobile.jsx';
+
+const MOBILE_BREAKPOINT = 768;
 
 const APP_DEFAULTS = /*EDITMODE-BEGIN*/{
   "theme": "modern-dark",
@@ -318,8 +321,9 @@ function MenuBar({ openWindow, openWins, showRecruiterBadge, theme, setTheme }) 
   return (
     <div className="menubar">
       <BrandMenu />
+      <span className="mb-name">Michael Lei</span>
       <span className="mb-sep">·</span>
-      {DOCK_ITEMS.map((it) => (
+      {DOCK_ITEMS.filter(it => it.id !== "resume").map((it) => (
         <span
           key={it.id}
           className={`mb-nav ${isOpen(it.id) ? "open" : ""}`}
@@ -330,6 +334,15 @@ function MenuBar({ openWindow, openWins, showRecruiterBadge, theme, setTheme }) 
       ))}
       <span className="mb-spacer"></span>
       <div className="mb-right">
+        <button
+          type="button"
+          className={`mb-resume-cta ${isOpen("resume") ? "open" : ""}`}
+          onClick={() => openWindow({ app: "resume" })}
+          title="View resume"
+        >
+          <span>Resume</span>
+          <span className="mb-resume-arrow">↓</span>
+        </button>
         <ThemeMenu theme={theme} setTheme={setTheme} />
         <span><span className="mb-status-dot"></span>online</span>
         <span>{time}</span>
@@ -659,7 +672,17 @@ function PortfolioRoot({ fsTree }) {
     setFS(fsTree);
     installed.current = true;
   }
-  return <App />;
+
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < MOBILE_BREAKPOINT
+  );
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  return isMobile ? <Mobile /> : <App />;
 }
 
 export default PortfolioRoot;
