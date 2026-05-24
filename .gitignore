@@ -8,6 +8,9 @@ dist/
 # Reference / external repos
 Personal-Website/
 
+# Internal / not-for-publish docs
+AWS_DEPLOYMENT.md
+
 # Env / secrets
 .env
 .env.*
