@@ -94,7 +94,6 @@ function buildCommands({ cwdRef, setCwd, openExternal, openWindow, triggerApp, g
         ["blog",            "list writing"],
         ["about",           "about me"],
         ["neofetch",        "system / personal info card"],
-        ["theme <name>",    "modern-dark | classic | light | solarized | crt | mocha | ocean | dusk | forest"],
         ["tutorial",        "90-second bash tour for newcomers"],
         ["clear",           "clear the screen ( \u2303L )"],
         ["history",         "show recent commands"],
@@ -269,17 +268,6 @@ function buildCommands({ cwdRef, setCwd, openExternal, openWindow, triggerApp, g
     }
   };
 
-  commands.theme = {
-    run: (args) => {
-      const name = args[0];
-      const valid = ["modern-dark", "classic-dark", "classic", "light", "solarized", "crt", "mocha", "ocean", "dusk", "forest"];
-      if (!name) return { output: "themes: " + valid.filter(v => v !== "classic").map(v => `\u001b[a_${v}\u001b[/]`).join("  ") };
-      if (!valid.includes(name)) return { output: `\u001b[r_unknown theme: ${name}\u001b[/]` };
-      const resolved = name === "classic" ? "classic-dark" : name;
-      window.dispatchEvent(new CustomEvent("set-theme", { detail: resolved }));
-      return { output: `\u001b[g_\u2192\u001b[/] theme set to ${resolved}` };
-    }
-  };
 
   // ---- destructive / system commands: quippy responses ----
   const quip = (line) => ({ output: line });
@@ -370,7 +358,7 @@ function buildCommands({ cwdRef, setCwd, openExternal, openWindow, triggerApp, g
   return commands;
 }
 
-function NeofetchCard({ theme }) {
+function NeofetchCard() {
   return (
     <div style={{display:"flex", gap:"22px", alignItems:"flex-start", flexWrap:"wrap"}}>
       <pre className="ascii-art">{ASCII_LOGO}</pre>
@@ -384,7 +372,6 @@ function NeofetchCard({ theme }) {
         <div><span className="accent">langs</span>     ts \u00b7 python \u00b7 swift \u00b7 c++ \u00b7 java \u00b7 rust</div>
         <div><span className="accent">infra</span>     postgres \u00b7 mcp \u00b7 docker \u00b7 elasticsearch \u00b7 fastapi</div>
         <div><span className="accent">status</span>    <span className="ok">\u25cf</span> open to swe roles, summer + new-grad '26</div>
-        <div><span className="accent">theme</span>     {theme}</div>
         <div style={{marginTop:"6px"}}>
           <span className="dim">type </span><span className="accent">help</span><span className="dim"> to get started.</span>
         </div>
@@ -443,7 +430,7 @@ function commonPrefix(arr) {
   return p;
 }
 
-function Terminal({ theme, onRunRef, openWindow, triggerApp }) {
+function Terminal({ onRunRef, openWindow, triggerApp }) {
   const [cwd, setCwd] = useState(["home", "michael", "Desktop"]);
   const cwdRef = useRef(cwd);
   cwdRef.current = cwd;
@@ -514,9 +501,9 @@ function Terminal({ theme, onRunRef, openWindow, triggerApp }) {
     if (res.clear) { setHistory([]); return; }
 
     const out = { kind: "output", output: res.output, raw: res.raw, jsx: null };
-    if (cmd === "neofetch") out.jsx = <NeofetchCard theme={theme} />;
+    if (cmd === "neofetch") out.jsx = <NeofetchCard />;
     setHistory(h => [...h, entry, out]);
-  }, [commands, theme]);
+  }, [commands]);
 
   useEffect(() => {
     if (onRunRef) onRunRef.current = runCommand;

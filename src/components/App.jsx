@@ -6,31 +6,13 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { APPS, ProfilePhoto, AVATAR_PHOTO } from './Apps.jsx';
 import { Terminal } from './Terminal.jsx';
 import { Window } from './Window.jsx';
-import { useTweaks, TweaksPanel, TweakSection, TweakSelect, TweakButton } from './TweaksPanel.jsx';
 import { setFS } from '../lib/fs.ts';
 import Mobile from './Mobile.jsx';
 
 const MOBILE_BREAKPOINT = 768;
 
-const APP_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "theme": "modern-dark",
-  "monoFont": "JetBrains Mono",
-  "showRecruiterBadge": true
-}/*EDITMODE-END*/;
-
-const THEME_OPTIONS = [
-  { value: "modern-dark",  label: "Modern dark"   },
-  { value: "classic-dark", label: "Classic green" },
-  { value: "light",        label: "Light"         },
-  { value: "solarized",    label: "Solarized"     },
-  { value: "crt",          label: "CRT"           },
-  { value: "mocha",        label: "Mocha"         },
-  { value: "ocean",        label: "Ocean"         },
-  { value: "dusk",         label: "Dusk"          },
-  { value: "forest",       label: "Forest"        },
-];
-
-const MONO_OPTIONS = ["JetBrains Mono", "IBM Plex Mono", "Fira Code", "VT323"];
+const MENUBAR_H = 68;
+const DOCK_H = 108;
 
 const DOCK_ITEMS = [
   { id: "terminal", iconKey: "terminal", label: "Terminal" },
@@ -143,14 +125,18 @@ function useWindowManager(viewport) {
       // viewport-based default layout
       const vw = viewport.w, vh = viewport.h;
       w = Math.min(w, vw - 60);
-      h = Math.min(h, vh - 60);
+      // Clamp height so windows don't extend past the dock at the bottom.
+      const maxH = vh - MENUBAR_H - DOCK_H - 40;
+      h = Math.min(h, maxH);
 
       // stagger to avoid overlap
       const offset = (prev.length % 6) * 28;
       let x, y;
       if (isTerminal) {
-        x = Math.max(30, Math.round(vw * 0.08));
-        y = Math.max(40, Math.round(vh * 0.12));
+        // Center the terminal horizontally and vertically within the usable
+        // region (between the menubar and the dock) so the bottom is never cut off.
+        x = Math.max(30, Math.round((vw - w) / 2));
+        y = MENUBAR_H + Math.max(10, Math.round((vh - MENUBAR_H - DOCK_H - h) / 2));
       } else {
         // place to the right of the terminal if it exists
         const term = prev.find(w => w.app === "terminal");
@@ -200,8 +186,6 @@ function useWindowManager(viewport) {
         return { ...w, fullscreen: false, ...restore, preFullscreen: undefined };
       }
       const padding = 8;
-      const menuBarH = 68;
-      const dockH = 108; // leave breathing room above the dock
       return {
         ...w,
         fullscreen: true,
@@ -209,7 +193,7 @@ function useWindowManager(viewport) {
         x: padding,
         y: padding,
         w: viewport.w - padding * 2,
-        h: viewport.h - menuBarH - dockH - padding,
+        h: viewport.h - MENUBAR_H - DOCK_H - padding,
       };
     }));
   }, [viewport]);
@@ -225,51 +209,6 @@ function useWindowManager(viewport) {
 }
 
 /* ---------- Menu bar / dock ---------- */
-
-function ThemeMenu({ theme, setTheme }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const close = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("pointerdown", close);
-    return () => document.removeEventListener("pointerdown", close);
-  }, [open]);
-
-  const current = THEME_OPTIONS.find(o => o.value === theme) || THEME_OPTIONS[0];
-
-  return (
-    <div className="theme-menu" ref={ref}>
-      <button
-        className="theme-trigger"
-        onClick={() => setOpen(o => !o)}
-        aria-expanded={open}
-      >
-        <span className={`theme-swatch swatch-${theme}`}></span>
-        <span>{current.label.toLowerCase()}</span>
-        <span className="theme-chev">{open ? "▲" : "▼"}</span>
-      </button>
-      {open && (
-        <div className="theme-dropdown">
-          {THEME_OPTIONS.map(o => (
-            <button
-              key={o.value}
-              className={`theme-option ${o.value === theme ? "active" : ""}`}
-              onClick={() => { setTheme(o.value); setOpen(false); }}
-            >
-              <span className={`theme-swatch swatch-${o.value}`}></span>
-              <span className="theme-option-name">{o.label}</span>
-              {o.value === theme && <span className="theme-check">✓</span>}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 function BrandMenu() {
   const [open, setOpen] = useState(false);
@@ -309,7 +248,7 @@ function BrandMenu() {
   );
 }
 
-function MenuBar({ openWindow, openWins, showRecruiterBadge, theme, setTheme }) {
+function MenuBar({ openWindow, openWins }) {
   const [time, setTime] = useState(() => formatTime(new Date()));
   useEffect(() => {
     const t = setInterval(() => setTime(formatTime(new Date())), 30 * 1000);
@@ -343,7 +282,6 @@ function MenuBar({ openWindow, openWins, showRecruiterBadge, theme, setTheme }) 
           <span>Resume</span>
           <span className="mb-resume-arrow">↓</span>
         </button>
-        <ThemeMenu theme={theme} setTheme={setTheme} />
         <span><span className="mb-status-dot"></span>online</span>
         <span>{time}</span>
       </div>
@@ -355,42 +293,6 @@ function formatTime(d) {
   const day = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
   const t = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
   return `${day}  ${t}`;
-}
-
-function Dock({ openWindow, openWins }) {
-  return (
-    <div className="dock">
-      {DOCK_ITEMS.map((it, i) => {
-        const open = openWins.some(w => (it.id === "terminal" ? w.app === "terminal" : w.app === it.id) && !w.minimized);
-        if (i === 1) {
-          return (
-            <React.Fragment key={it.id}>
-              <span className="dock-divider"></span>
-              <DockItem item={it} open={open} onClick={() => openWindow({ app: it.id })} />
-            </React.Fragment>
-          );
-        }
-        return (
-          <DockItem
-            key={it.id}
-            item={it}
-            open={open}
-            onClick={() => openWindow({ app: it.id })}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-function DockItem({ item, open, onClick }) {
-  return (
-    <div className={`dock-item ${open ? "open" : ""}`} onClick={onClick}>
-      <span className="dock-glyph">{DOCK_ICONS[item.iconKey]}</span>
-      <span className="dock-tooltip">{item.label}</span>
-      <span className="dock-dot"></span>
-    </div>
-  );
 }
 
 const STI_BASE = "https://cdn.jsdelivr.net/gh/edent/SuperTinyIcons@master/images/svg/";
@@ -496,7 +398,6 @@ function AppModal({ msg, onClose }) {
 /* ---------- App ---------- */
 
 function App() {
-  const [t, setTweak] = useTweaks(APP_DEFAULTS);
   const onRunRef = useRef(null);
 
   const [appModal, setAppModal] = useState(null);
@@ -526,17 +427,6 @@ function App() {
   const wmRef = useRef(wm);
   wmRef.current = wm;
 
-  // Theme
-  useEffect(() => { document.documentElement.dataset.theme = t.theme; }, [t.theme]);
-  useEffect(() => {
-    document.documentElement.style.setProperty("--mono", `"${t.monoFont}", "SF Mono", ui-monospace, monospace`);
-  }, [t.monoFont]);
-  useEffect(() => {
-    const h = (e) => setTweak("theme", e.detail);
-    window.addEventListener("set-theme", h);
-    return () => window.removeEventListener("set-theme", h);
-  }, [setTweak]);
-
   // Open terminal on boot
   const opened = useRef(false);
   useEffect(() => {
@@ -560,7 +450,7 @@ function App() {
   // Build app body for a window
   const renderBody = (w) => {
     if (w.app === "terminal") {
-      return <Terminal theme={t.theme} onRunRef={onRunRef} openWindow={openWindow} triggerApp={triggerApp} />;
+      return <Terminal onRunRef={onRunRef} openWindow={openWindow} triggerApp={triggerApp} />;
     }
     const meta = APPS[w.app];
     if (!meta) return null;
@@ -577,8 +467,6 @@ function App() {
       <MenuBar
         openWindow={openWindow}
         openWins={visibleWins}
-        theme={t.theme}
-        setTheme={(v) => setTweak("theme", v)}
       />
 
       <div className="desktop">
@@ -630,34 +518,6 @@ function App() {
 
       <RealDock onQuip={showQuip} />
       <AppModal msg={appModal} onClose={closeAppModal} />
-
-      <TweaksPanel title="Tweaks">
-        <TweakSection title="Theme">
-          <TweakSelect
-            label="theme"
-            value={t.theme}
-            onChange={(v) => setTweak("theme", v)}
-            options={THEME_OPTIONS}
-          />
-          <TweakSelect
-            label="mono font"
-            value={t.monoFont}
-            onChange={(v) => setTweak("monoFont", v)}
-            options={MONO_OPTIONS.map(f => ({ value: f, label: f }))}
-          />
-        </TweakSection>
-        <TweakSection title="Quick actions">
-          <TweakButton label="reboot" onClick={() => window.location.reload()} />
-          <TweakButton label="open terminal" onClick={() => openWindow({ app: "terminal" })} />
-          <TweakButton label="open all apps" onClick={() => {
-            ["projects","blog","resume","about","contact"].forEach((a, i) =>
-              setTimeout(() => openWindow({ app: a }), i * 80));
-          }} />
-          <TweakButton label="close all windows" onClick={() => {
-            wmRef.current.wins.forEach(w => wmRef.current.close(w.id));
-          }} />
-        </TweakSection>
-      </TweaksPanel>
     </div>
   );
 }
