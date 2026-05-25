@@ -1212,20 +1212,116 @@ body {
 .about-prose em { color: var(--text); font-style: italic; }
 
 /* Resume PDF viewer */
-.resume-pdf-wrap {
+/* Resume — inline HTML render */
+.resume {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 0;
+  gap: 8px;
 }
 
-.resume-pdf-frame {
-  width: 100%;
-  min-height: 720px;
-  height: calc(100vh - 280px);
-  border: 1px solid var(--border-soft);
-  border-radius: 8px;
-  background: var(--bg-elev-2);
+.resume-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 8px;
+}
+
+.resume-name {
+  font-family: var(--sans);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin: 0 0 6px;
+  line-height: 1.1;
+}
+
+.resume-contact {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: var(--text-soft);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.resume-contact a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 0.12s;
+}
+
+.resume-contact a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.resume-contact-sep {
+  color: var(--text-dim);
+}
+
+.resume-section {
+  margin-top: 18px;
+}
+
+.resume-section-title {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.resume-meta {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.resume-where {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.resume-stack {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--text-dim);
+  margin-left: 8px;
+}
+
+.resume-bullets {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.resume-bullets li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 5px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-soft);
+}
+
+.resume-bullets li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--text-dim);
 }
 
 .user-avatar-img {

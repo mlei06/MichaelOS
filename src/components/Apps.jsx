@@ -7,7 +7,6 @@ import { getNode, formatSize } from '../lib/fs.ts';
 
 const PROFILE_PHOTO = '/media/profile/photo.jpg';
 const AVATAR_PHOTO = '/media/avatar/photo.jpg';
-const RESUME_PDF = '/resumes/master.pdf';
 
 function ProfilePhoto({ src, alt, className, placeholderClass, placeholder }) {
   const [failed, setFailed] = useState(false);
@@ -447,19 +446,166 @@ function PostApp({ arg }) {
 }
 
 /* ---------- Resume ---------- */
+function ResumeRow({ title, sub, when, where, bullets }) {
+  return (
+    <div className="resume-row">
+      <div>
+        <div className="resume-title">{title}</div>
+        {sub && <div className="resume-sub">{sub}</div>}
+        {bullets && bullets.length > 0 && (
+          <ul className="resume-bullets">
+            {bullets.map((b, i) => <li key={i}>{b}</li>)}
+          </ul>
+        )}
+      </div>
+      <div className="resume-meta">
+        {when && <div className="resume-when">{when}</div>}
+        {where && <div className="resume-where">{where}</div>}
+      </div>
+    </div>
+  );
+}
+
+function ResumeSection({ title, children }) {
+  return (
+    <section className="resume-section">
+      <h2 className="resume-section-title">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
 function ResumeApp({ onDownload }) {
   return (
     <AppShell breadcrumb={["~", "resume.pdf"]} title="Resume" meta="Michael Lei · Duke ECE + CS · May 2028">
-      <div className="resume-pdf-wrap">
-        <iframe
-          className="resume-pdf-frame"
-          src={RESUME_PDF}
-          title="Michael Lei — resume"
-        />
-        <button type="button" className="resume-download" onClick={onDownload}>
-          <span>↓</span>
-          <span>Download resume.pdf</span>
-        </button>
+      <div className="resume">
+        <header className="resume-head">
+          <div>
+            <h1 className="resume-name">Michael Lei</h1>
+            <div className="resume-contact">
+              <a href="mailto:michael.lei@duke.edu">michael.lei@duke.edu</a>
+              <span className="resume-contact-sep">·</span>
+              <a href="https://www.linkedin.com/in/michael-lei-1a99b6169" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <span className="resume-contact-sep">·</span>
+              <a href="https://github.com/mlei06" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <span className="resume-contact-sep">·</span>
+              <a href="https://michael-lei.com" target="_blank" rel="noopener noreferrer">Portfolio</a>
+            </div>
+          </div>
+          <button type="button" className="resume-download" onClick={onDownload}>
+            <span>↓</span>
+            <span>Download PDF</span>
+          </button>
+        </header>
+
+        <ResumeSection title="Education">
+          <ResumeRow
+            title="Duke University"
+            sub="B.S. Electrical and Computer Engineering · B.S. Computer Science · GPA 4.0/4.0"
+            when="May 2028"
+            where="Durham, NC"
+            bullets={[
+              "Relevant Coursework: Software Design, Algorithms, Databases, OS, Networking, Machine Learning, Computer Architecture",
+            ]}
+          />
+        </ResumeSection>
+
+        <ResumeSection title="Experience">
+          <ResumeRow
+            title="Forewarned"
+            sub="Software Engineer"
+            when="May 2026 – Present"
+            where="Durham, NC"
+            bullets={[
+              "Engineered distributed microservices that normalize thousands of daily block events from Palo Alto firewalls, AWS security groups, Azure network policies, and edge routers into a unified event schema.",
+              "Shipped a retrieval service that embeds newly published CVEs on ingest and reranks blocked source IPs by matched vulnerability recency, prioritizing operator response on critical threats.",
+              "Built an operator dashboard surfacing priority-ranked attacker queues and cross-device campaign views over previously siloed firewall, cloud, and router event streams.",
+            ]}
+          />
+          <ResumeRow
+            title="VSee"
+            sub="Software Engineering Intern"
+            when="May 2025 – Present"
+            where="Sunnyvale, CA"
+            bullets={[
+              "Engineered dockerized backend microservices for clinical de-identification and ICD / CPT medical coding with Kubernetes-style health probes and Prometheus metrics, reducing physician charting time by 93% in production.",
+              "Extended VSee's on-prem LLM platform with 8 MCP server integrations, authoring a custom Elasticsearch analytics MCP server, exposing internal docs, repos, and product usage data, increasing platform usage by 17%.",
+              "Shipped a PR review service triggered by Bitbucket webhooks that posts line-cited issues via Code Insights reports, inline annotations, and PR comments, running on 100+ production PRs across 3 repos.",
+            ]}
+          />
+          <ResumeRow
+            title="Chilkoti Group"
+            sub="Software Engineer"
+            when="Summer 2025"
+            where="Remote"
+            bullets={[
+              "Automated per-slide OpenCV parameter tuning with a coarse-to-fine grid search, cutting manual tuning from 20 minutes to 2 minutes per slide.",
+              "Designed a brightness-contrast scoring metric for the search, enabling parameter selection without labeled ground truth.",
+              "Productionized the lab's Jupyter-based CV workflow into a React UI for interactive slide annotation.",
+            ]}
+          />
+          <ResumeRow
+            title="Duke University"
+            sub="Software Engineer"
+            when="Fall 2024"
+            where="Durham, NC"
+            bullets={[
+              "Engineered a flagpole control system pairing a browser UI with C++ firmware on ESP32 devices, targeting a manual process that consumed hundreds of staff-hours per year.",
+              "Architected a distributed MQTT control plane where new flagpoles auto-onboard via retained topics and a single broadcast topic fans commands across the full device fleet.",
+            ]}
+          />
+        </ResumeSection>
+
+        <ResumeSection title="Projects">
+          <ResumeRow
+            title={<>DukeDine <span className="resume-stack">Python · React · PostgreSQL · AWS ECS · OpenTofu</span></>}
+            bullets={[
+              "Designed and shipped a full-stack nutrition and strength-training platform serving 100+ active Duke users, deployed on AWS ECS Fargate with OpenTofu-managed infrastructure and CI/CD.",
+              "Built the personalization backend on AWS Bedrock with a retrieval layer over embedded user training logs, validating cited dates and quotes against source records before responses are returned.",
+            ]}
+          />
+          <ResumeRow
+            title={<>Bet308 <span className="resume-stack">Java · JavaFX</span></>}
+            bullets={[
+              "Architected a data-driven card-game engine with an LLM-assisted authoring environment that compiles natural-language prompts into playable game JSON, shipping 7 games on a single interpreter.",
+              "Led architecture on an 8-person team through 6 weeks of agile development, running one-week shippable sprints.",
+            ]}
+          />
+          <ResumeRow
+            title={<>FireWatch <span className="resume-stack">Swift · CoreML · DJI Mobile SDK</span></>}
+            bullets={[
+              "Built a wildfire detection system, developing a Swift iOS app that streams a drone's live video feed through an on-device CoreML model at ~95% test accuracy, enabling early intervention.",
+              "Won U.S. Division Semi-Finalist honors at the China-US Young Maker Competition.",
+            ]}
+          />
+        </ResumeSection>
+
+        <ResumeSection title="Technical Skills">
+          <div className="skill-group-label">Programming Languages</div>
+          <div className="skills">
+            {["Python", "TypeScript / JavaScript", "Java", "Swift", "C++", "SQL"].map(s => (
+              <span key={s} className="skill">{s}</span>
+            ))}
+          </div>
+          <div className="skill-group-label">Web &amp; Backend</div>
+          <div className="skills">
+            {["Microservices", "Distributed Systems", "System Design", "REST APIs", "WebSockets", "Webhooks", "Event-Driven Pipelines", "Caching", "FastAPI", "React", "Node.js", "PostgreSQL", "Redis", "JWT", "OAuth"].map(s => (
+              <span key={s} className="skill">{s}</span>
+            ))}
+          </div>
+          <div className="skill-group-label">Cloud &amp; DevOps</div>
+          <div className="skills">
+            {["AWS", "Docker", "Kubernetes", "CI/CD", "GitHub Actions", "Bitbucket Pipelines", "OpenTofu", "Observability", "Linux", "Bash", "Git"].map(s => (
+              <span key={s} className="skill">{s}</span>
+            ))}
+          </div>
+          <div className="skill-group-label">AI / LLM Engineering</div>
+          <div className="skills">
+            {["RAG", "MCP", "AI Agents", "Prompt Engineering", "Fine-tuning", "Embeddings"].map(s => (
+              <span key={s} className="skill">{s}</span>
+            ))}
+          </div>
+        </ResumeSection>
       </div>
     </AppShell>
   );
