@@ -117,7 +117,6 @@ function useWindowManager(viewport) {
       // size + initial position
       let w, h;
       if (isTerminal) { w = 1060; h = 710; }
-      else if (spec.app === "resume") { w = 1040; h = 870; }
       else if (spec.app === "projects" || spec.app === "blog") { w = 1040; h = 780; }
       else if (spec.app === "contact") { w = 480; h = 340; }
       else { w = 970; h = 730; }
@@ -248,7 +247,7 @@ function BrandMenu() {
   );
 }
 
-function MenuBar({ openWindow, openWins }) {
+function MenuBar({ openWindow, openWins, downloadResume }) {
   const [time, setTime] = useState(() => formatTime(new Date()));
   useEffect(() => {
     const t = setInterval(() => setTime(formatTime(new Date())), 30 * 1000);
@@ -275,9 +274,9 @@ function MenuBar({ openWindow, openWins }) {
       <div className="mb-right">
         <button
           type="button"
-          className={`mb-resume-cta ${isOpen("resume") ? "open" : ""}`}
-          onClick={() => openWindow({ app: "resume" })}
-          title="View resume"
+          className="mb-resume-cta"
+          onClick={downloadResume}
+          title="Download resume.pdf"
         >
           <span>Resume</span>
           <span className="mb-resume-arrow">↓</span>
@@ -450,13 +449,12 @@ function App() {
   // Build app body for a window
   const renderBody = (w) => {
     if (w.app === "terminal") {
-      return <Terminal onRunRef={onRunRef} openWindow={openWindow} triggerApp={triggerApp} />;
+      return <Terminal onRunRef={onRunRef} openWindow={openWindow} downloadResume={downloadResume} triggerApp={triggerApp} />;
     }
     const meta = APPS[w.app];
     if (!meta) return null;
     const Comp = meta.comp;
-    const extra = w.app === "resume" ? { onDownload: downloadResume } : {};
-    return <Comp arg={w.arg} openWindow={openWindow} {...extra} />;
+    return <Comp arg={w.arg} openWindow={openWindow} />;
   };
 
   // Render dock label-aware open state
@@ -467,12 +465,13 @@ function App() {
       <MenuBar
         openWindow={openWindow}
         openWins={visibleWins}
+        downloadResume={downloadResume}
       />
 
       <div className="desktop">
         {/* Desktop file shortcuts */}
         <div className="desktop-icons">
-          <div className="desktop-icon" onClick={() => openWindow({ app: "resume" })}>
+          <div className="desktop-icon" onClick={downloadResume}>
             <div className="icon-glyph" style={{color: "var(--accent)"}}>{DOCK_ICONS.fileText}</div>
             <div className="icon-label">resume.pdf</div>
           </div>

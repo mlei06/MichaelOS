@@ -74,7 +74,7 @@ function renderInline(text, onClick) {
   return out;
 }
 
-function buildCommands({ cwdRef, setCwd, openExternal, openWindow, triggerApp, getHistory, neofetch }) {
+function buildCommands({ cwdRef, setCwd, openExternal, openWindow, downloadResume, triggerApp, getHistory, neofetch }) {
   const commands = {};
 
   commands.help = {
@@ -89,7 +89,7 @@ function buildCommands({ cwdRef, setCwd, openExternal, openWindow, triggerApp, g
         ["open <file|url>", "open a file in a new window, or a url"],
         ["whoami",          "about Michael"],
         ["contact",         "open the contact window"],
-        ["resume",          "open the resume window"],
+        ["resume",          "download the resume pdf"],
         ["projects [name]", "list projects, or open one"],
         ["blog",            "list writing"],
         ["about",           "about me"],
@@ -164,8 +164,8 @@ function buildCommands({ cwdRef, setCwd, openExternal, openWindow, triggerApp, g
         return { output: `\u001b[g_\u2192\u001b[/] launching ${target}` };
       }
       if (node.kind === "pdf") {
-        openWindow({ app: "resume" });
-        return { output: `\u001b[g_\u2192\u001b[/] opening resume.pdf in viewer` };
+        downloadResume && downloadResume();
+        return { output: `\u001b[g_\u2192\u001b[/] downloading resume.pdf` };
       }
       // route to well-known apps based on path. Files live under ~/Desktop,
       // so peel that off before matching.
@@ -191,7 +191,7 @@ function buildCommands({ cwdRef, setCwd, openExternal, openWindow, triggerApp, g
 
   commands.whoami = { run: () => ({ output: "Michael Lei \u2014 Duke ECE + CS (May 2028) \u00b7 ships AI-augmented tools for real teams" }) };
   commands.contact = { run: () => { openWindow({ app: "contact" }); return { output: "\u001b[g_\u2192\u001b[/] opening contact" }; } };
-  commands.resume  = { run: () => { openWindow({ app: "resume" });  return { output: "\u001b[g_\u2192\u001b[/] opening resume.pdf" }; } };
+  commands.resume  = { run: () => { downloadResume && downloadResume(); return { output: "\u001b[g_\u2192\u001b[/] downloading resume.pdf" }; } };
   commands.blog    = { run: () => { openWindow({ app: "blog" });    return { output: "\u001b[g_\u2192\u001b[/] opening blog" }; } };
   commands.about   = { run: () => { openWindow({ app: "about" });   return { output: "\u001b[g_\u2192\u001b[/] opening about" }; } };
   commands.now     = commands.about;
@@ -430,7 +430,7 @@ function commonPrefix(arr) {
   return p;
 }
 
-function Terminal({ onRunRef, openWindow, triggerApp }) {
+function Terminal({ onRunRef, openWindow, downloadResume, triggerApp }) {
   const [cwd, setCwd] = useState(["home", "michael", "Desktop"]);
   const cwdRef = useRef(cwd);
   cwdRef.current = cwd;
@@ -451,10 +451,10 @@ function Terminal({ onRunRef, openWindow, triggerApp }) {
   const openExternal = useCallback((url) => { window.open(url, "_blank"); }, []);
 
   const commands = useMemo(() => buildCommands({
-    cwdRef, setCwd, openExternal, openWindow, triggerApp,
+    cwdRef, setCwd, openExternal, openWindow, downloadResume, triggerApp,
     getHistory: () => historyRef.current,
     neofetch: () => null,
-  }), [openWindow, openExternal, triggerApp]);
+  }), [openWindow, openExternal, downloadResume, triggerApp]);
 
   /* boot */
   useEffect(() => {
