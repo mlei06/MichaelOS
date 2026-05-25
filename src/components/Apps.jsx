@@ -449,19 +449,21 @@ function PostApp({ arg }) {
 function ResumeRow({ title, sub, when, where, bullets }) {
   return (
     <div className="resume-row">
-      <div>
-        <div className="resume-title">{title}</div>
-        {sub && <div className="resume-sub">{sub}</div>}
-        {bullets && bullets.length > 0 && (
-          <ul className="resume-bullets">
-            {bullets.map((b, i) => <li key={i}>{b}</li>)}
-          </ul>
-        )}
+      <div className="resume-row-head">
+        <span className="resume-title">{title}</span>
+        {when && <span className="resume-when">{when}</span>}
       </div>
-      <div className="resume-meta">
-        {when && <div className="resume-when">{when}</div>}
-        {where && <div className="resume-where">{where}</div>}
-      </div>
+      {(sub || where) && (
+        <div className="resume-row-sub">
+          <span className="resume-sub">{sub}</span>
+          {where && <span className="resume-where">{where}</span>}
+        </div>
+      )}
+      {bullets && bullets.length > 0 && (
+        <ul className="resume-bullets">
+          {bullets.map((b, i) => <li key={i}>{b}</li>)}
+        </ul>
+      )}
     </div>
   );
 }
@@ -475,28 +477,35 @@ function ResumeSection({ title, children }) {
   );
 }
 
+function SkillGroup({ label, items }) {
+  return (
+    <p className="resume-skill-group">
+      <strong>{label}:</strong> {items.join(", ")}
+    </p>
+  );
+}
+
 function ResumeApp({ onDownload }) {
   return (
     <AppShell breadcrumb={["~", "resume.pdf"]} title="Resume" meta="Michael Lei · Duke ECE + CS · May 2028">
-      <div className="resume">
-        <header className="resume-head">
-          <div>
+      <div className="resume-stage">
+        <button type="button" className="resume-download" onClick={onDownload} title="Download as PDF">
+          <span>↓</span>
+          <span>Download PDF</span>
+        </button>
+        <div className="resume-paper">
+          <header className="resume-head">
             <h1 className="resume-name">Michael Lei</h1>
             <div className="resume-contact">
               <a href="mailto:michael.lei@duke.edu">michael.lei@duke.edu</a>
-              <span className="resume-contact-sep">·</span>
+              <span className="resume-contact-sep">|</span>
               <a href="https://www.linkedin.com/in/michael-lei-1a99b6169" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-              <span className="resume-contact-sep">·</span>
+              <span className="resume-contact-sep">|</span>
               <a href="https://github.com/mlei06" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <span className="resume-contact-sep">·</span>
+              <span className="resume-contact-sep">|</span>
               <a href="https://michael-lei.com" target="_blank" rel="noopener noreferrer">Portfolio</a>
             </div>
-          </div>
-          <button type="button" className="resume-download" onClick={onDownload}>
-            <span>↓</span>
-            <span>Download PDF</span>
-          </button>
-        </header>
+          </header>
 
         <ResumeSection title="Education">
           <ResumeRow
@@ -581,31 +590,12 @@ function ResumeApp({ onDownload }) {
         </ResumeSection>
 
         <ResumeSection title="Technical Skills">
-          <div className="skill-group-label">Programming Languages</div>
-          <div className="skills">
-            {["Python", "TypeScript / JavaScript", "Java", "Swift", "C++", "SQL"].map(s => (
-              <span key={s} className="skill">{s}</span>
-            ))}
-          </div>
-          <div className="skill-group-label">Web &amp; Backend</div>
-          <div className="skills">
-            {["Microservices", "Distributed Systems", "System Design", "REST APIs", "WebSockets", "Webhooks", "Event-Driven Pipelines", "Caching", "FastAPI", "React", "Node.js", "PostgreSQL", "Redis", "JWT", "OAuth"].map(s => (
-              <span key={s} className="skill">{s}</span>
-            ))}
-          </div>
-          <div className="skill-group-label">Cloud &amp; DevOps</div>
-          <div className="skills">
-            {["AWS", "Docker", "Kubernetes", "CI/CD", "GitHub Actions", "Bitbucket Pipelines", "OpenTofu", "Observability", "Linux", "Bash", "Git"].map(s => (
-              <span key={s} className="skill">{s}</span>
-            ))}
-          </div>
-          <div className="skill-group-label">AI / LLM Engineering</div>
-          <div className="skills">
-            {["RAG", "MCP", "AI Agents", "Prompt Engineering", "Fine-tuning", "Embeddings"].map(s => (
-              <span key={s} className="skill">{s}</span>
-            ))}
-          </div>
+          <SkillGroup label="Programming Languages" items={["Python", "TypeScript / JavaScript", "Java", "Swift", "C++", "SQL"]} />
+          <SkillGroup label="Web & Backend" items={["Microservices", "Distributed Systems", "System Design", "REST APIs", "WebSockets", "Webhooks", "Event-Driven Pipelines", "Caching", "FastAPI", "React", "Node.js", "PostgreSQL", "Redis", "JWT", "OAuth"]} />
+          <SkillGroup label="Cloud & DevOps" items={["AWS", "Docker", "Kubernetes", "CI/CD", "GitHub Actions", "Bitbucket Pipelines", "OpenTofu", "Observability", "Linux", "Bash", "Git"]} />
+          <SkillGroup label="AI / LLM Engineering" items={["RAG", "MCP", "AI Agents", "Prompt Engineering", "Fine-tuning", "Embeddings"]} />
         </ResumeSection>
+        </div>
       </div>
     </AppShell>
   );
