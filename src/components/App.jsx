@@ -383,8 +383,11 @@ function AppModal({ msg, onClose }) {
           <div className="win-title">{msg.label}</div>
         </div>
         <div className="app-modal-body">
-          <div className="app-modal-icon" style={{ background: msg.bg }}>
-            <span className="rd-glyph">{msg.glyph}</span>
+          <div
+            className={`app-modal-icon ${msg.colorFile ? "app-modal-icon-bare" : ""}`}
+            style={msg.colorFile ? undefined : { background: msg.bg }}
+          >
+            <BrandIcon id={msg.appId} colorFile={msg.colorFile} slug={msg.iconSlug} glyph={msg.glyph} />
           </div>
           <div className="app-modal-name">{msg.label}</div>
           <div className="app-modal-quip">{msg.quip}</div>
@@ -403,10 +406,13 @@ function App() {
   const showQuip = useCallback((app) => {
     setAppModal({
       id: Date.now(),
+      appId: app.id,
       label: app.label,
       quip: app.quip,
       glyph: app.glyph,
       bg: app.bg,
+      colorFile: app.colorFile,
+      iconSlug: app.iconSlug,
     });
   }, []);
   const triggerApp = useCallback((id) => {

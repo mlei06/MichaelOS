@@ -1616,6 +1616,17 @@ body {
   margin-bottom: 4px;
 }
 
+.app-modal-icon-bare {
+  background: transparent !important;
+  border: none;
+  box-shadow: none;
+}
+
+/* Scale BrandIcon up inside the larger modal tile */
+.app-modal-icon .rd-brand { width: 48px; height: 48px; }
+.app-modal-icon .rd-brand-color { width: 76px; height: 76px; }
+.app-modal-icon svg.rd-brand { width: 56px; height: 56px; }
+
 .app-modal-name {
   font-family: var(--mono);
   font-size: 17px;
